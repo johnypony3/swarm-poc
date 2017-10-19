@@ -48,7 +48,7 @@ resource "null_resource" "docker_deploy" {
   provisioner "remote-exec" {
     inline = [
       "echo remote-exec docker_deploy",
-      "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS",
+      "docker login -u ${var.DOCKER_HUB_USER} -p ${var.DOCKER_HUB_PASS}",
       "bash ./docker/provision-files/docker-compose-start.sh",
       "sudo rm -rf ./docker",
     ]
