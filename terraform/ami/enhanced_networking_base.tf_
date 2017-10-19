@@ -1,0 +1,79 @@
+resource "aws_instance" "enhanced-network-base" {
+  instance_type               = "${var.instance_type}"
+  vpc_security_group_ids      = ["${aws_security_group.docker_host.id}"]
+  ami                         = "${data.aws_ami.ubuntu_server.id}"
+  key_name                    = "${var.key_name}"
+  subnet_id                   = "${module.vpc.subnet_a_id}"
+  associate_public_ip_address = true
+  monitoring                  = false
+  source_dest_check           = false
+  iam_instance_profile        = "${aws_iam_instance_profile.iam_instance.name}"
+
+  tags {
+    "Name"    = "swarm_enhanced-network-base"
+    "petname" = "${random_pet.ec2_name.id}"
+  }
+}
+
+resource "null_resource" "dependancies" {
+  depends_on = ["aws_instance.enhanced-network-base"]
+
+  triggers {
+    instance = "${aws_instance.enhanced-network-base.id}"
+  }
+
+  connection {
+    agent       = false
+    host        = "${aws_instance.enhanced-network-base.public_ip}"
+    private_key = "${file(var.pem_key)}"
+    timeout     = "30s"
+    user        = "ubuntu"
+  }
+
+  provisioner "file" {
+    destination = "/home/ubuntu"
+    source      = "/Users/edward/git/swarm-poc/docker/provision-files"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo remote-exec dependancies",
+      "#bash /home/ubuntu/provision-files/base-dependencies.sh",
+      "bash /home/ubuntu/provision-files/enhanced-networking.sh",
+      "rm -rf /home/ubuntu/provision-files",
+    ]
+  }
+}
+
+resource "random_pet" "ec2_name" {
+  separator = "_"
+}
+
+resource "random_pet" "ami_name" {
+  depends_on = ["null_resource.dependancies"]
+
+  keepers = {
+    ami_id = "${aws_instance.enhanced-network-base.id}"
+  }
+
+  separator = "_"
+  prefix    = "swarm_base"
+}
+
+/*
+resource "aws_ami_from_instance" "swarm_base" {
+  depends_on = ["random_pet.ami_name"]
+
+  name               = "${random_pet.ami_name.id}"
+  source_instance_id = "${aws_instance.enhanced-network-base.id}"
+
+  tags {
+    "Name" = "swarm-base"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+*/
+
