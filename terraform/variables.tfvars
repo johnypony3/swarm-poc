@@ -6,7 +6,7 @@ az_b = "us-west-2b"
 
 key_name = "swarm"
 
-instance_type = "t2.small"
+instance_type = "t2.micro"
 
 pem_key = "~/.ssh/swarm.pem"
 
