@@ -18,6 +18,10 @@ resource "aws_instance" "docker_host" {
 resource "null_resource" "docker_deploy" {
   depends_on = ["aws_instance.docker_host"]
 
+  triggers {
+    instance = "${aws_instance.docker_host.id}"
+  }
+
   connection {
     agent       = false
     host        = "${aws_instance.docker_host.public_ip}"
@@ -35,8 +39,10 @@ resource "null_resource" "docker_deploy" {
     inline = [
       "echo remote-exec docker_deploy",
       "docker login -u ${var.DOCKER_HUB_USER} -p ${var.DOCKER_HUB_PASS}",
-      "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' down",
-      "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' up --build -d",
+      "bash ./docker/provision-files/docker-compose-start.sh",
+      "docker-compose -f './docker/compose-files/$DOCKER_COMPOSE_FILE' down"
+      "docker-compose -f './docker/compose-files/$DOCKER_COMPOSE_FILE' kill"
+      zzzzzz
       "sudo rm -rf ./docker",
     ]
   }
