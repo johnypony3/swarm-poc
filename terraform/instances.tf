@@ -6,17 +6,13 @@ resource "aws_instance" "docker_host" {
   subnet_id                   = "${module.vpc.subnet_a_id}"
   associate_public_ip_address = true
   monitoring                  = false
-  source_dest_check           = true
+  source_dest_check           = false
   iam_instance_profile        = "${aws_iam_instance_profile.iam_instance.name}"
 
   tags {
     "Name"    = "swarm_docker_host"
     "petname" = "${random_pet.ec2_name.id}"
   }
-}
-
-resource "random_pet" "ec2_name" {
-  separator = "_"
 }
 
 resource "null_resource" "docker_deploy" {
@@ -49,8 +45,11 @@ resource "null_resource" "docker_deploy" {
   }
 }
 
-resource "null_resource" "docker_host" {
-  instance   = "${aws_instance.docker_host.id}"
-  depends_on = ["null_resource.docker_deploy"]
-  vpc        = true
+resource "random_pet" "ec2_name" {
+  separator = "_"
+}
+
+resource "aws_eip" "docker_host" {
+  instance = "${aws_instance.docker_host.id}"
+  vpc      = true
 }
