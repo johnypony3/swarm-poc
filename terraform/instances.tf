@@ -26,7 +26,7 @@ resource "null_resource" "docker_deploy" {
     agent       = false
     host        = "${aws_instance.docker_host.public_ip}"
     private_key = "${file(var.pem_key)}"
-    timeout     = "30s"
+    timeout     = "90s"
     user        = "ubuntu"
   }
 
