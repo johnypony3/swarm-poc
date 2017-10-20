@@ -39,7 +39,11 @@ resource "null_resource" "docker_deploy" {
     inline = [
       "echo remote-exec docker_deploy",
       "docker login -u ${var.DOCKER_HUB_USER} -p ${var.DOCKER_HUB_PASS}",
-      "sudo docker plugin install rexray/s3fs:latest S3FS_ACCESSKEY=${var.AWS_ACCESS_KEY_ID} S3FS_SECRETKEY=${var.AWS_SECRET_ACCESS_KEY} --grant-all-permissions",
+      "sudo docker rm rexray/s3fs:latest --force",
+      "docker plugin install rexray/s3fs:latest S3FS_ACCESSKEY=${var.AWS_ACCESS_KEY_ID} S3FS_SECRETKEY=${var.AWS_SECRET_ACCESS_KEY} --grant-all-permissions",
+      "NONSUDO VOLUME CALL ***********************",
+      "docker volume ls",
+      "SUDO VOLUME CALL ***********************",
       "sudo docker volume ls",
       "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' down",
       "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' up --build -d",
