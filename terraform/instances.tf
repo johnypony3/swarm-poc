@@ -6,7 +6,7 @@ resource "aws_instance" "docker_host" {
   subnet_id                   = "${module.vpc.subnet_a_id}"
   associate_public_ip_address = true
   monitoring                  = false
-  source_dest_check           = false
+  source_dest_check           = true
   iam_instance_profile        = "${aws_iam_instance_profile.iam_instance.name}"
 
   tags {
@@ -15,12 +15,18 @@ resource "aws_instance" "docker_host" {
   }
 }
 
-resource "null_resource" "docker_deploy" {
+resource "aws_eip" "docker_host" {
   depends_on = ["aws_instance.docker_host"]
+  instance   = "${aws_instance.docker_host.id}"
+  vpc        = true
 
-  triggers {
-    instance = "${aws_instance.docker_host.id}"
+  provisioner "local-exec" {
+    command = "echo 'sleeping for 2 minutes' && sleep 120s"
   }
+}
+
+resource "null_resource" "docker_deploy" {
+  depends_on = ["aws_eip.docker_host"]
 
   connection {
     agent       = false
@@ -47,9 +53,4 @@ resource "null_resource" "docker_deploy" {
 
 resource "random_pet" "ec2_name" {
   separator = "_"
-}
-
-resource "aws_eip" "docker_host" {
-  instance = "${aws_instance.docker_host.id}"
-  vpc      = true
 }
