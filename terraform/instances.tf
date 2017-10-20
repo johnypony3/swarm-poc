@@ -39,8 +39,8 @@ resource "null_resource" "docker_deploy" {
     inline = [
       "echo remote-exec docker_deploy",
       "docker login -u ${var.DOCKER_HUB_USER} -p ${var.DOCKER_HUB_PASS}",
-      "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' down"
-      "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' up --build -d"
+      "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' down",
+      "docker-compose -f './docker/compose-files/${var.DOCKER_COMPOSE_FILE}' up --build -d",
       "sudo rm -rf ./docker",
     ]
   }
