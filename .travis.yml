@@ -12,8 +12,8 @@ install:
   - openssl aes-256-cbc -K $encrypted_6bd89bcc047c_key -iv $encrypted_6bd89bcc047c_iv -in swarm.pem.enc -out ~/.ssh/swarm.pem -d
   - sudo chmod 400 ~/.ssh/swarm.pem
   - sudo pip install awscli
-  - sudo aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-  - sudo aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  - sudo aws configure set aws_access_key_id $TF_VAR_AWS_ACCESS_KEY_ID
+  - sudo aws configure set aws_secret_access_key $TF_VAR_AWS_SECRET_ACCESS_KEY
   - sudo wget https://releases.hashicorp.com/terraform/0.10.7/terraform_0.10.7_linux_amd64.zip -O terraform.zip
   - sudo unzip terraform.zip -d /usr/local/bin/
 

@@ -18,3 +18,5 @@ variable "docker_data_bucket_name" {}
 variable "DOCKER_HUB_USER" {}
 variable "DOCKER_HUB_PASS" {}
 variable "DOCKER_COMPOSE_FILE" {}
+variable "AWS_ACCESS_KEY_ID" {}
+variable "AWS_SECRET_ACCESS_KEY" {}
