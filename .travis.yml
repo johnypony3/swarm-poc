@@ -18,4 +18,4 @@ install:
   - sudo unzip terraform.zip -d /usr/local/bin/
 
 script:
-  sudo bash ./terraform/destroy_apply.sh
+  bash ./terraform/destroy_apply.sh
