@@ -61,8 +61,8 @@ echo "node prereqs installed"
 sudo apt-get autoremove -y
 echo "cleaned up"
 
-sudo docker plugin install rexray/s3fs:latest  S3FS_ACCESSKEY=$AWS_ACCESS_KEY_ID S3FS_SECRETKEY=$AWS_SECRET_ACCESS_KEY --grant-all-permissions
-sudo docker volume ls
+docker plugin install rexray/s3fs:latest  S3FS_ACCESSKEY=$AWS_ACCESS_KEY_ID S3FS_SECRETKEY=$AWS_SECRET_ACCESS_KEY --grant-all-permissions
+docker volume ls
 echo "installed s3 volume driver"
 
 #mkdir ./compose-files
