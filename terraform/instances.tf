@@ -40,9 +40,8 @@ resource "null_resource" "docker_deploy" {
       "echo remote-exec docker_deploy",
       "docker login -u ${var.DOCKER_HUB_USER} -p ${var.DOCKER_HUB_PASS}",
       "bash ./docker/provision-files/docker-compose-start.sh",
-      "docker-compose -f './docker/compose-files/$DOCKER_COMPOSE_FILE' down"
-      "docker-compose -f './docker/compose-files/$DOCKER_COMPOSE_FILE' kill"
-      zzzzzz
+      "docker-compose -f './docker/compose-files/$DOCKER_COMPOSE_FILE' down",
+      "docker-compose -f './docker/compose-files/$DOCKER_COMPOSE_FILE' kill",
       "sudo rm -rf ./docker",
     ]
   }
