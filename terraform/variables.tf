@@ -17,3 +17,4 @@ variable "terraform_bucket_name" {}
 variable "docker_data_bucket_name" {}
 variable "DOCKER_HUB_USER" {}
 variable "DOCKER_HUB_PASS" {}
+variable "DOCKER_COMPOSE_FILE" {}
