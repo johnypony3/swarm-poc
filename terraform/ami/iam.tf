@@ -5,10 +5,6 @@ resource "aws_iam_instance_profile" "iam_instance" {
 resource "aws_iam_policy" "ec2-s3" {
   name   = "swarm-ec2-s3"
   policy = "${data.aws_iam_policy_document.ec2-s3.json}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_iam_role" "ecs-instance" {

@@ -4,9 +4,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "swarm-terraform"
-    key    = "terraform.tfstate"
-    region = "us-west-2"
+    bucket  = "swarm-terraform"
+    key     = "terraform.tfstate"
+    region  = "us-west-2"
+    encrypt = "true"
   }
 }
 

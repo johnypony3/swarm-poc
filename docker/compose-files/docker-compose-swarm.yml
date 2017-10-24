@@ -98,16 +98,16 @@ services:
     image: portainer/portainer
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      #- swarm-docker-data-portainer:/data
+      - swarm-docker-data-portainer:/data
     networks:
       - theemm
     ports:
       - "9000:9000"
     #command: ["--no-auth"]
 
-#volumes:
-#  swarm-docker-data-portainer:
-#    external: true
+volumes:
+  swarm-docker-data-portainer:
+    external: true
 
 networks:
   theemm:

@@ -15,14 +15,8 @@ resource "aws_instance" "docker_base" {
   }
 }
 
-resource "aws_eip" "docker_base" {
-  instance   = "${aws_instance.docker_base.id}"
+resource "null_resource" "dependencies" {
   depends_on = ["aws_instance.docker_base"]
-  vpc        = true
-}
-
-resource "null_resource" "dependancies" {
-  depends_on = ["aws_eip.docker_base"]
 
   triggers {
     instance = "${aws_instance.docker_base.id}"
@@ -30,9 +24,9 @@ resource "null_resource" "dependancies" {
 
   connection {
     agent       = false
-    host        = "${aws_eip.docker_base.public_ip}"
+    host        = "${aws_instance.docker_base.public_ip}"
     private_key = "${file(var.pem_key)}"
-    timeout     = "30s"
+    timeout     = "90s"
     user        = "ubuntu"
   }
 
@@ -43,19 +37,65 @@ resource "null_resource" "dependancies" {
 
   provisioner "remote-exec" {
     inline = [
-      "echo remote-exec dependancies",
+      "echo 'remote-exec dependencies'",
       "bash /home/ubuntu/provision-files/base-dependencies.sh",
+      "echo 'remote-exec base-docker'",
+      "bash /home/ubuntu/provision-files/base-docker.sh",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'installing s3 volume driver'",
+      "docker plugin install rexray/s3fs:latest S3FS_ACCESSKEY=${var.AWS_ACCESS_KEY_ID} S3FS_SECRETKEY=${var.AWS_SECRET_ACCESS_KEY} --grant-all-permissions",
+      "docker volume ls",
+      "echo 'remote-exec base-main'",
+      "bash /home/ubuntu/provision-files/base-main.sh",
+      "echo 'remote-exec cleanup'",
       "rm -rf /home/ubuntu/provision-files",
     ]
   }
 }
+
+/*
+resource "null_resource" "dependencies" {
+  depends_on = ["null_resource.docker_group"]
+
+  triggers {
+    instance = "${aws_instance.docker_base.id}"
+  }
+
+  connection {
+    agent       = false
+    host        = "${aws_eip.docker_base.public_ip}"
+    private_key = "${file(var.pem_key)}"
+    timeout     = "90s"
+    user        = "ubuntu"
+  }
+
+  provisioner "file" {
+    destination = "/home/ubuntu"
+    source      = "/Users/edward/git/swarm-poc/docker/provision-files"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'remote-exec dependencies'",
+      "echo ' > base-dependencies.sh'",
+      "bash /home/ubuntu/provision-files/base-dependencies.sh",
+      "echo ' > cleanup'",
+      "rm -rf /home/ubuntu/provision-files",
+    ]
+  }
+}
+*/
 
 resource "random_pet" "ec2_name" {
   separator = "_"
 }
 
 resource "random_pet" "ami_name" {
-  depends_on = ["null_resource.dependancies"]
+  depends_on = ["null_resource.dependencies"]
 
   keepers = {
     ami_id = "${aws_instance.docker_base.id}"
